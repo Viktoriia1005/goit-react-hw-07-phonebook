@@ -1,18 +1,15 @@
 import React, { useState } from 'react';
-
-import { useSelector, useDispatch } from 'react-redux';
-import { contactAdd } from '../redux/operation';
-import { getContacts } from '../redux/selectors';
+import { useAddContactMutation } from '../../services/contactsAPI';
 
 import s from './ContactForm.module.css';
 
-export default function ContactsForm() {
+export default function ContactsForm({ contacts }) {
   const [name, setName] = useState('');
-  const [number, setNumber] = useState('');
-  const contacts = useSelector(getContacts);
-  const dispatch = useDispatch();
+  const [phone, setPhone] = useState('');
 
-  const handleInputChange = e => {
+  const [addContact] = useAddContactMutation();
+
+  const handleChange = e => {
     const { name, value } = e.currentTarget;
 
     switch (name) {
@@ -21,7 +18,7 @@ export default function ContactsForm() {
         break;
 
       case 'number':
-        setNumber(value);
+        setPhone(value);
         break;
 
       default:
@@ -34,11 +31,10 @@ export default function ContactsForm() {
     const similarContact = contacts.find(contact => contact.name === name);
 
     if (similarContact) {
-      alert(`${name} is already in contact`);
-    } else dispatch(contactAdd({ name, number }));
-
+      return alert(`${similarContact.name} is already in contact`);
+    } else addContact({ name, phone });
     setName('');
-    setNumber('');
+    setPhone('');
   };
 
   return (
@@ -50,7 +46,7 @@ export default function ContactsForm() {
           type="text"
           name="name"
           value={name}
-          onChange={handleInputChange}
+          onChange={handleChange}
           pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
           title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
           required
@@ -62,8 +58,8 @@ export default function ContactsForm() {
           className={s.input}
           type="tel"
           name="number"
-          value={number}
-          onChange={handleInputChange}
+          value={phone}
+          onChange={handleChange}
           pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
           title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
           required
