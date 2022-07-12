@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 
 import { useSelector, useDispatch } from 'react-redux';
-import * as actions from '../redux/actions';
+import { contactAdd } from '../redux/operation';
 import { getContacts } from '../redux/selectors';
-import { nanoid } from 'nanoid';
 
 import s from './ContactForm.module.css';
 
@@ -32,20 +31,11 @@ export default function ContactsForm() {
 
   const handleSubmit = e => {
     e.preventDefault();
-    const similarContact = contacts.find(
-      contact => contact.name.toLowerCase() === name.toLowerCase()
-    );
+    const similarContact = contacts.find(contact => contact.name === name);
 
     if (similarContact) {
       alert(`${name} is already in contact`);
-    } else
-      dispatch(
-        actions.contactAdd({
-          id: nanoid(),
-          name,
-          number,
-        })
-      );
+    } else dispatch(contactAdd({ name, number }));
 
     setName('');
     setNumber('');
